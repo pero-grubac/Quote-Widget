@@ -1,0 +1,115 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    tags:
+      - "v*"
+    paths-ignore:
+      - "**.md"
+      - "readme_assets/**"
+      - "LICENSE"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "readme_assets/**"
+      - "LICENSE"
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore
+        run: dotnet restore QuoteWidget.sln
+
+      - name: Build
+        run: dotnet build QuoteWidget.sln --no-restore --configuration Release
+
+      - name: Test
+        run: dotnet test QuoteWidget.sln --no-build --configuration Release
+
+  build:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Publish
+        run: >
+          dotnet publish QuoteWidget/QuoteWidget.csproj
+          -c Release -r win-x64 --self-contained false
+          -p:PublishSingleFile=true
+          -o publish
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: QuoteWidget
+          path: publish/QuoteWidget.exe
+
+  release:
+    needs: [test, build]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json', '**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Publish
+        run: >
+          dotnet publish QuoteWidget/QuoteWidget.csproj
+          -c Release -r win-x64 --self-contained false
+          -p:PublishSingleFile=true
+          -o publish
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: publish/QuoteWidget.exe
+          generate_release_notes: true

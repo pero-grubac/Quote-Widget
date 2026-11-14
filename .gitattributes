@@ -1,0 +1,27 @@
+###############################################################################
+# Set default behavior to automatically normalize line endings.
+###############################################################################
+* text=auto
+
+###############################################################################
+# Set default behavior for command prompt diff.
+###############################################################################
+*.cs     text diff=csharp
+*.xaml   text
+*.json   text
+*.md     text
+
+###############################################################################
+# Declare files that will always have CRLF line endings on checkout.
+###############################################################################
+*.sln    text eol=crlf
+
+###############################################################################
+# Denote all files that are truly binary and should not be modified.
+###############################################################################
+*.png    binary
+*.jpg    binary
+*.gif    binary
+*.ico    binary
+*.exe    binary
+*.dll    binary

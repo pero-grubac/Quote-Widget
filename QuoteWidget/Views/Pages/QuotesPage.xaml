@@ -1,0 +1,166 @@
+<UserControl x:Class="QuoteWidget.Views.Pages.QuotesPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+        <Style x:Key="FilterLabel" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,4" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:TextBox Grid.Row="0" x:Name="SearchTextBox"
+                    PlaceholderText="Search quotes..."
+                    Icon="{ui:SymbolIcon Symbol=Search24}"
+                    Margin="0,0,0,12"
+                    TextChanged="SearchTextBox_TextChanged" />
+
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="*" MinWidth="120" />
+                <ColumnDefinition Width="8" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Movie" Style="{StaticResource FilterLabel}" />
+                <ComboBox x:Name="MovieFilterComboBox" SelectionChanged="FilterComboBox_SelectionChanged" />
+            </StackPanel>
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Year" Style="{StaticResource FilterLabel}" />
+                <ComboBox x:Name="YearFilterComboBox" SelectionChanged="FilterComboBox_SelectionChanged" />
+            </StackPanel>
+            <StackPanel Grid.Column="4">
+                <TextBlock Text="Character" Style="{StaticResource FilterLabel}" />
+                <ComboBox x:Name="CharacterFilterComboBox" SelectionChanged="FilterComboBox_SelectionChanged" />
+            </StackPanel>
+            <StackPanel Grid.Column="6">
+                <TextBlock Text="Show" Style="{StaticResource FilterLabel}" />
+                <ComboBox x:Name="ShowFilterComboBox" SelectedIndex="0" SelectionChanged="FilterComboBox_SelectionChanged">
+                    <ComboBoxItem Content="All" Tag="" />
+                    <ComboBoxItem Content="Favorites" Tag="favorites" />
+                    <ComboBoxItem Content="Hidden" Tag="excluded" />
+                </ComboBox>
+            </StackPanel>
+            <StackPanel Grid.Column="8">
+                <TextBlock Text="Group by" Style="{StaticResource FilterLabel}" />
+                <ComboBox x:Name="GroupByComboBox" SelectedIndex="0" SelectionChanged="GroupByComboBox_SelectionChanged">
+                    <ComboBoxItem Content="None" Tag="" />
+                    <ComboBoxItem Content="Movie" Tag="Movie" />
+                    <ComboBoxItem Content="Year" Tag="Year" />
+                    <ComboBoxItem Content="Character" Tag="Character" />
+                </ComboBox>
+            </StackPanel>
+            <ui:Button Grid.Column="10" Content="Clear" Icon="{ui:SymbolIcon Symbol=Dismiss24}"
+                       VerticalAlignment="Bottom"
+                       Height="{Binding ActualHeight, ElementName=GroupByComboBox}"
+                       Click="ClearFilters_Click" />
+        </Grid>
+
+        <!-- A plain Border instead of ui:Card: the Card template centers its content vertically, so a short list would float in the middle. -->
+        <Border Grid.Row="2" CornerRadius="8" BorderThickness="1"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}">
+            <ui:DataGrid x:Name="QuotesDataGrid"
+                         VerticalAlignment="Stretch"
+                         AutoGenerateColumns="False"
+                         IsReadOnly="True"
+                         SelectionMode="Single"
+                         CanUserAddRows="False"
+                         GridLinesVisibility="None"
+                         HeadersVisibility="Column"
+                         AlternatingRowBackground="{DynamicResource ControlFillColorDefaultBrush}"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         VirtualizingPanel.IsVirtualizingWhenGrouping="True"
+                         MouseDoubleClick="QuotesDataGrid_MouseDoubleClick">
+                <ui:DataGrid.GroupStyle>
+                    <GroupStyle>
+                        <GroupStyle.HeaderTemplate>
+                            <DataTemplate>
+                                <TextBlock Margin="12,12,0,4" FontWeight="SemiBold" Foreground="White">
+                                    <Run Text="{Binding Name, Mode=OneWay, TargetNullValue='(none)'}" />
+                                    <Run Text="{Binding ItemCount, Mode=OneWay, StringFormat=' ({0})'}" Foreground="Gray" />
+                                </TextBlock>
+                            </DataTemplate>
+                        </GroupStyle.HeaderTemplate>
+                    </GroupStyle>
+                </ui:DataGrid.GroupStyle>
+                <ui:DataGrid.Columns>
+                    <DataGridTemplateColumn Width="44">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ui:Button Appearance="Transparent" BorderThickness="0" Padding="4"
+                                           ToolTip="Favorite (shown more often) - click to toggle"
+                                           Click="FavoriteStar_Click">
+                                    <ui:SymbolIcon Symbol="Star20">
+                                        <ui:SymbolIcon.Style>
+                                            <Style TargetType="ui:SymbolIcon">
+                                                <Setter Property="Filled" Value="False" />
+                                                <Setter Property="Foreground" Value="Gray" />
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsFavorite}" Value="True">
+                                                        <Setter Property="Filled" Value="True" />
+                                                        <Setter Property="Foreground" Value="#FFC83D" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </ui:SymbolIcon.Style>
+                                    </ui:SymbolIcon>
+                                </ui:Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Width="36">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ui:SymbolIcon Symbol="EyeOff16" Foreground="Gray" ToolTip="Hidden - never shown on the widgets"
+                                               Visibility="{Binding IsExcluded, Converter={StaticResource BoolToVisibility}}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="Quote" Binding="{Binding Text}" Width="3*" />
+                    <DataGridTextColumn Header="Movie" Binding="{Binding Movie}" Width="1.5*" />
+                    <DataGridTextColumn Header="Year" Binding="{Binding Year}" Width="70" />
+                    <DataGridTextColumn Header="Character" Binding="{Binding Character}" Width="1.2*" />
+                </ui:DataGrid.Columns>
+            </ui:DataGrid>
+        </Border>
+
+        <Grid Grid.Row="3" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Grid.Column="0" x:Name="StatusTextBlock" VerticalAlignment="Center" Foreground="White" />
+
+            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                <ui:Button Content="Add" Icon="{ui:SymbolIcon Symbol=Add24}" Margin="0,0,8,0" Click="Add_Click" />
+                <ui:Button Content="Edit" Icon="{ui:SymbolIcon Symbol=Edit24}" Margin="0,0,8,0" Click="Edit_Click" />
+                <ui:Button Content="Delete" Icon="{ui:SymbolIcon Symbol=Delete24}" Margin="0,0,8,0" Click="Delete_Click" />
+                <ui:Button Icon="{ui:SymbolIcon Symbol=EyeOff24}" ToolTip="Hide / unhide on the widgets (keeps the quote in the list)"
+                           Margin="0,0,8,0" Click="Exclude_Click" />
+                <ui:Button Content="Export..." Icon="{ui:SymbolIcon Symbol=ArrowExportLtr24}" Margin="0,0,8,0" Click="Export_Click" />
+                <ui:Button Content="Import..." Icon="{ui:SymbolIcon Symbol=ArrowImport24}" Appearance="Primary" Click="Import_Click" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

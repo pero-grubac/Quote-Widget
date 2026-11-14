@@ -1,0 +1,34 @@
+<UserControl x:Class="QuoteWidget.Views.Pages.QuoteEditorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             Width="420">
+    <StackPanel>
+        <TextBlock Text="Quote (required)" Margin="0,0,0,4" />
+        <ui:TextBox x:Name="QuoteTextBox" AcceptsReturn="True" TextWrapping="Wrap" Height="80" Margin="0,0,0,12" />
+
+        <TextBlock Text="Movie (required)" Margin="0,0,0,4" />
+        <ui:TextBox x:Name="MovieTextBox" Margin="0,0,0,12" />
+
+        <Grid Margin="0,0,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Grid.Column="0">
+                <TextBlock Text="Year (optional)" Margin="0,0,0,4" />
+                <ui:TextBox x:Name="YearTextBox" />
+            </StackPanel>
+
+            <StackPanel Grid.Column="2">
+                <TextBlock Text="Character (optional)" Margin="0,0,0,4" />
+                <ui:TextBox x:Name="CharacterTextBox" />
+            </StackPanel>
+        </Grid>
+
+        <CheckBox x:Name="FavoriteCheckBox" Content="Favorite (shown more often)" Margin="0,12,0,0" />
+        <CheckBox x:Name="ExcludedCheckBox" Content="Don't show this quote on the widgets" Margin="0,4,0,0" />
+    </StackPanel>
+</UserControl>

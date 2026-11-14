@@ -1,0 +1,31 @@
+<UserControl x:Class="QuoteWidget.Views.Pages.WidgetsPage"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <ui:Card Grid.Row="0" Margin="0,0,0,16">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <ui:ToggleSwitch Grid.Column="0" x:Name="SameQuoteToggle"
+                                  OffContent="Each monitor shows its own random quote"
+                                  OnContent="All monitors show the same quote"
+                                  Click="SameQuoteToggle_Click" />
+
+                <ui:Button Grid.Column="1" Content="Reset all monitors to defaults" Click="ResetAll_Click" />
+            </Grid>
+        </ui:Card>
+
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="CardsPanel" />
+        </ScrollViewer>
+    </Grid>
+</UserControl>

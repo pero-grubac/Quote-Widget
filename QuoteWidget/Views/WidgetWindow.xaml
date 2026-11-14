@@ -1,0 +1,77 @@
+<Window x:Class="QuoteWidget.Views.WidgetWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Quote Widget"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        ShowActivated="False"
+        MinWidth="220"
+        MinHeight="140">
+
+    <Window.Resources>
+        <Storyboard x:Key="FadeInStoryboard">
+            <DoubleAnimation Storyboard.TargetName="ContentRoot"
+                              Storyboard.TargetProperty="Opacity"
+                              From="0" To="1" Duration="0:0:0.6" />
+        </Storyboard>
+    </Window.Resources>
+
+    <Grid>
+        <Border x:Name="BackgroundBorder"
+                Background="Transparent"
+                MouseLeftButtonDown="BackgroundBorder_MouseLeftButtonDown" />
+
+        <Viewbox Stretch="Uniform" StretchDirection="DownOnly" Margin="24">
+            <StackPanel x:Name="ContentRoot">
+                <TextBlock x:Name="QuoteTextBlock"
+                           FontFamily="Georgia"
+                           FontSize="36"
+                           FontStyle="Italic"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           TextWrapping="Wrap"
+                           MaxWidth="900"
+                           Text="&quot;Sample quote&quot;" />
+
+                <StackPanel x:Name="DetailsPanel" HorizontalAlignment="Center">
+                    <TextBlock x:Name="MovieTextBlock"
+                               FontFamily="Segoe UI"
+                               FontSize="16"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               TextAlignment="Center"
+                               Text="Movie Title (Year)" />
+                    <TextBlock x:Name="CharacterTextBlock"
+                               FontFamily="Segoe UI"
+                               FontSize="13"
+                               Foreground="White"
+                               Opacity="0.75"
+                               TextAlignment="Center"
+                               Text="Character" />
+                </StackPanel>
+            </StackPanel>
+        </Viewbox>
+
+        <Rectangle x:Name="UnlockOutline"
+                   Stroke="White"
+                   StrokeThickness="1"
+                   StrokeDashArray="4 2"
+                   Fill="Transparent"
+                   IsHitTestVisible="False"
+                   Visibility="Collapsed" />
+
+        <!-- Resize thumbs: hit-testable only while the widget is unlocked -->
+        <Thumb x:Name="ThumbTop" Height="6" VerticalAlignment="Top" HorizontalAlignment="Stretch" Cursor="SizeNS" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbTop_DragDelta" />
+        <Thumb x:Name="ThumbBottom" Height="6" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Cursor="SizeNS" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbBottom_DragDelta" />
+        <Thumb x:Name="ThumbLeft" Width="6" HorizontalAlignment="Left" VerticalAlignment="Stretch" Cursor="SizeWE" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbLeft_DragDelta" />
+        <Thumb x:Name="ThumbRight" Width="6" HorizontalAlignment="Right" VerticalAlignment="Stretch" Cursor="SizeWE" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbRight_DragDelta" />
+
+        <Thumb x:Name="ThumbTopLeft" Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Top" Cursor="SizeNWSE" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbTopLeft_DragDelta" />
+        <Thumb x:Name="ThumbTopRight" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Top" Cursor="SizeNESW" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbTopRight_DragDelta" />
+        <Thumb x:Name="ThumbBottomLeft" Width="10" Height="10" HorizontalAlignment="Left" VerticalAlignment="Bottom" Cursor="SizeNESW" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbBottomLeft_DragDelta" />
+        <Thumb x:Name="ThumbBottomRight" Width="10" Height="10" HorizontalAlignment="Right" VerticalAlignment="Bottom" Cursor="SizeNWSE" Opacity="0" IsHitTestVisible="False" DragDelta="ThumbBottomRight_DragDelta" />
+    </Grid>
+</Window>
